@@ -1,0 +1,7 @@
+config {
+  type: "declaration",
+  database: "keep-up-gcp-project",
+  schema: "stackoverflow_dv",
+  name: "posts_questions",
+  description: "raw posts_questions table"
+}

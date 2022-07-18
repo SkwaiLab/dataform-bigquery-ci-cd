@@ -1,0 +1,7 @@
+config {
+  type: "declaration",
+  database: "keep-up-gcp-project",
+  schema: "stackoverflow_dv",
+  name: "users",
+  description: "raw users table"
+}

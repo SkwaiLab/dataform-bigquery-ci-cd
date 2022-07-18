@@ -1,0 +1,33 @@
+steps:
+#- name: node:16
+#  entrypoint: npm
+#  dir: "."
+#  args: ['install']
+
+# Build the dataform project container image
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME/$_LOCATION:$COMMIT_SHA', '.' ]
+
+- name: 'gcr.io/cloud-builders/docker'
+  entrypoint: 'bash'
+  args: ['-c', 'docker pull gcr.io/$PROJECT_ID/$REPO_NAME/$_LOCATION:$COMMIT_SHA || exit 0']
+
+- name: 'gcr.io/cloud-builders/docker'
+  args: [
+            'build',
+            '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME/$_LOCATION:$COMMIT_SHA',
+            '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME/$_LOCATION:$COMMIT_SHA',
+            '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME/$_LOCATION:$COMMIT_SHA',
+            '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME/$_LOCATION:$COMMIT_SHA',
+            '.'
+        ]
+
+# Push the dataform project container image to Container Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$PROJECT_ID/$REPO_NAME/$_LOCATION:$COMMIT_SHA']
+
+  timeout: 1600s
+  logsBucket: 'gs://cloudbuild-logs-$PROJECT_ID'
+  options:
+    #machineType: 'N1_HIGHCPU_8'
+    logging: GCS_ONLY
